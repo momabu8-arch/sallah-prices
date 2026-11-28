@@ -1,0 +1,98 @@
+name: Collect prices
+
+# Runs in the PUBLIC repository momabu8-arch/sallah-prices, where GitHub Actions minutes are free, so
+# every store can be read for hours each night. The app code stays in the private repository, which
+# copies this file and the collector code here (its sync-collector.yml); edit them there, not here.
+# Store listings are saved on this repository's `data` branch; the price file the app downloads is
+# catalog.json.gz on `main`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: How long to collect for (minutes, all stores at once)
+        default: "300"
+      smoke:
+        description: Only try 3 products per store and print them (no saving)
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 0 * * *" # every day 03:00 Riyadh time
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collect-prices-${{ inputs.smoke && 'smoke' || 'full' }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350 # GitHub stops any job at 6 hours
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test matching rules
+        run: python collector/test_matching.py
+
+      - name: Smoke test (3 products per store)
+        if: inputs.smoke
+        run: python collector/collect.py --smoke --minutes 10
+
+      - name: Get previous prices
+        if: ${{ !inputs.smoke }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/data"
+          if git fetch --depth 1 origin data 2>/dev/null; then
+            git --work-tree="$RUNNER_TEMP/data" checkout FETCH_HEAD -- .
+          fi
+          # Big files are kept gzipped on the data branch (GitHub refuses files over 100 MB).
+          find "$RUNNER_TEMP/data" -name '*.json.gz' -exec gunzip -kf {} +
+          ls -la "$RUNNER_TEMP/data"
+
+      - name: Collect
+        if: ${{ !inputs.smoke }}
+        run: |
+          python collector/collect.py \
+            --state "$RUNNER_TEMP/data/state" \
+            --out "$RUNNER_TEMP/data/catalog.json" \
+            --minutes "${{ inputs.minutes || '300' }}"
+
+      - name: Save store listings to the data branch
+        if: ${{ !inputs.smoke }}
+        run: |
+          cd "$RUNNER_TEMP/data"
+          {
+            echo "## Prices collected"
+            echo '```json'
+            python3 -c "import json;r=json.load(open('report.json'));[s.pop('records',None) for s in r['stores']];print(json.dumps(r,ensure_ascii=False,indent=1))"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          find . -name '*.json.gz' -delete
+          : > .gitignore
+          for f in catalog.json $(find state -name '*.json' -size +40M); do
+            gzip -9 -kf "$f" && echo "$f" >> .gitignore
+          done
+          git init -q -b data
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Prices $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" data
+
+      # One fresh commit (code + price file) each night keeps the repository small.
+      - name: Publish the price file for the app
+        if: ${{ !inputs.smoke }}
+        run: |
+          gzip -9 -c "$RUNNER_TEMP/data/catalog.json" > catalog.json.gz
+          cp "$RUNNER_TEMP/data/report.json" report.json
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout -q --orphan publish
+          git add -A && git commit -qm "Prices $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f origin publish:main
+          echo "Published: https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/catalog.json.gz" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,136 @@
+{
+ "generatedAt": "2026-11-28T08:45:09+03:00",
+ "products": 200000,
+ "matchedInTwoOrMoreStores": 18921,
+ "stores": [
+  {
+   "store": "tamimi",
+   "sitemapUrls": 22889,
+   "fetched": 24273,
+   "parsed": 24273,
+   "failed": 0,
+   "blocked": 0,
+   "known": 21502,
+   "newFirst": 1384
+  },
+  {
+   "store": "panda",
+   "sitemapUrls": 11325,
+   "fetched": 11325,
+   "parsed": 11214,
+   "failed": 111,
+   "blocked": 0,
+   "known": 11634,
+   "newFirst": 0
+  },
+  {
+   "store": "nahdi",
+   "sitemapUrls": 58800,
+   "fetched": 28889,
+   "parsed": 28838,
+   "failed": 51,
+   "blocked": 0,
+   "known": 79298,
+   "newFirst": 4169
+  },
+  {
+   "store": "whites",
+   "sitemapUrls": 16579,
+   "fetched": 7649,
+   "parsed": 7649,
+   "failed": 0,
+   "blocked": 0,
+   "known": 16619,
+   "newFirst": 1
+  },
+  {
+   "store": "united",
+   "sitemapUrls": 0,
+   "fetched": 0,
+   "parsed": 0,
+   "failed": 0,
+   "blocked": 0,
+   "note": "refused by the site's bot protection"
+  },
+  {
+   "store": "hspharmacy",
+   "sitemapUrls": 434,
+   "fetched": 868,
+   "parsed": 868,
+   "failed": 0,
+   "blocked": 1,
+   "known": 33056,
+   "newFirst": 434
+  },
+  {
+   "store": "faces",
+   "sitemapUrls": 1074,
+   "fetched": 1077,
+   "parsed": 1077,
+   "failed": 0,
+   "blocked": 0,
+   "known": 1096,
+   "newFirst": 3
+  },
+  {
+   "store": "mumzworld",
+   "sitemapUrls": 275722,
+   "fetched": 22338,
+   "parsed": 22324,
+   "failed": 14,
+   "blocked": 0,
+   "known": 31125,
+   "newFirst": 22338
+  },
+  {
+   "store": "extra",
+   "sitemapUrls": 56084,
+   "fetched": 22499,
+   "parsed": 13929,
+   "failed": 8570,
+   "blocked": 0,
+   "known": 20627,
+   "newFirst": 22499
+  },
+  {
+   "store": "almanea",
+   "sitemapUrls": 5806,
+   "fetched": 8727,
+   "parsed": 8649,
+   "failed": 78,
+   "blocked": 0,
+   "known": 2885,
+   "newFirst": 2921
+  },
+  {
+   "store": "saco",
+   "sitemapUrls": 40027,
+   "fetched": 29457,
+   "parsed": 29430,
+   "failed": 27,
+   "blocked": 0,
+   "known": 39994,
+   "newFirst": 26548
+  },
+  {
+   "store": "ikea",
+   "sitemapUrls": 17357,
+   "fetched": 19279,
+   "parsed": 19203,
+   "failed": 76,
+   "blocked": 0,
+   "known": 17281,
+   "newFirst": 9637
+  },
+  {
+   "store": "hungerstation",
+   "sitemapUrls": 81676,
+   "fetched": 46741,
+   "parsed": 46698,
+   "failed": 43,
+   "blocked": 18,
+   "known": 64811,
+   "newFirst": 46741
+  }
+ ]
+}
